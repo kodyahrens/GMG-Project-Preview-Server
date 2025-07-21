@@ -37,13 +37,13 @@ app.get('/:service', (req, res) => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 18px 20px;
+        padding: 8px 20px;
         box-sizing: border-box;
         flex-shrink: 0;
       }
 
       .logo {
-        height: 80px;
+        height: 70px;
         width: auto;
       }
 
