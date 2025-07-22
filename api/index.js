@@ -11,6 +11,21 @@ module.exports = (req, res) => {
     return res.end();
   }
 
+  // Serve static background image directly
+  if (path === '/bg.webp') {
+    const fs = require('fs');
+    const pathModule = require('path');
+    const imgPath = pathModule.join(__dirname, '..', 'public', 'bg.webp');
+    try {
+      const img = fs.readFileSync(imgPath);
+      res.setHeader('Content-Type', 'image/webp');
+      return res.end(img);
+    } catch (e) {
+      res.writeHead(404);
+      return res.end('Image not found');
+    }
+  }
+
   // Extract top path segment e.g. /route-whatever → route-whatever
   const service = path.replace(/^\//, '').split('/')[0];
   const targetUrl = `https://${service}.vercel.app`;
@@ -20,7 +35,7 @@ module.exports = (req, res) => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Preview – ${service}</title>
+    <title>${service} - Website Preview - GMG Web Design</title>
     <style>
       html, body {
         margin: 0;
@@ -37,12 +52,22 @@ module.exports = (req, res) => {
       }
 
       .banner {
-        background-color: #0C1B2D;
+        background: linear-gradient(rgba(12,27,45,0.95), rgba(12,27,45,0.85)), url('/bg.webp') center/cover no-repeat;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 8px 20px;
         box-sizing: border-box;
+        flex-shrink: 0;
+      }
+
+      /* Thin bar above banner for preview note */
+      .top-bar {
+        background-color: #0C1B2D;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 4px 0;
         flex-shrink: 0;
       }
 
@@ -58,15 +83,16 @@ module.exports = (req, res) => {
       }
 
       .btn {
-        padding: 10px 20px;
+        padding: 6px 14px;
         border: none;
         border-radius: 6px;
         font-weight: 500;
-        font-size: 18px;
+        font-size: 14px;
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
         transition: opacity 0.2s ease;
+        text-transform: uppercase;
       }
 
       .btn:hover {
@@ -97,6 +123,14 @@ module.exports = (req, res) => {
         height: 100%;
       }
 
+      .right-section {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* banner-message no longer needed as message moved to top-bar */
+
       @media (max-width: 640px) {
         .banner {
           padding: 8px 12px;
@@ -120,17 +154,20 @@ module.exports = (req, res) => {
   </head>
   <body>
     <div class="container">
+      <div class="top-bar">This banner will be removed on the final site.</div>
       <div class="banner">
         <a href="https://gmgwebdesign.com" target="_blank">
           <img src="https://crm.gmgwebdesign.com/logo1.webp" alt="GMG Web Design" class="logo" />
         </a>
-        <div class="button-group">
-          <a href="https://gmgwebdesign.com/api/project-via-link/${service}?status=request-edit" target="_blank" class="btn btn-request">
-            Request Edits
-          </a>
-          <a href="https://gmgwebdesign.com/api/project-via-link/${service}?status=approve" target="_blank" class="btn btn-approve">
-            Approve
-          </a>
+        <div class="right-section">
+          <div class="button-group">
+            <a href="https://gmgwebdesign.com/api/project-via-link/${service}?status=request-edit" target="_blank" class="btn btn-request">
+              Request Edits
+            </a>
+            <a href="https://gmgwebdesign.com/api/project-via-link/${service}?status=approve" target="_blank" class="btn btn-approve">
+              Approve
+            </a>
+          </div>
         </div>
       </div>
       <div class="iframe-container">
